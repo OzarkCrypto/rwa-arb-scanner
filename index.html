@@ -315,10 +315,10 @@
             }
         }
 
-        // Extended Exchange API
+        // Extended Exchange API (via proxy)
         async function fetchExtended() {
             try {
-                const response = await fetch('https://api.starknet.extended.exchange/api/v1/info/markets');
+                const response = await fetch('/api/extended');
                 const data = await response.json();
                 const prices = {};
                 if (data.data) {
@@ -338,10 +338,10 @@
             }
         }
 
-        // Ostium API
+        // Ostium API (via proxy)
         async function fetchOstium() {
             try {
-                const response = await fetch('https://metadata-backend.ostium.io/PricePublish/latest-prices');
+                const response = await fetch('/api/ostium');
                 const data = await response.json();
                 const prices = {};
                 if (Array.isArray(data)) {
@@ -359,10 +359,10 @@
             }
         }
 
-        // Lighter API
+        // Lighter API (via proxy for reliability)
         async function fetchLighter() {
             try {
-                const response = await fetch('https://mainnet.zklighter.elliot.ai/api/v1/markets');
+                const response = await fetch('/api/lighter');
                 const data = await response.json();
                 const prices = {};
                 if (data.markets) {
