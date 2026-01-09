@@ -246,8 +246,7 @@
                   hyperliquid: { ticker: 'PAXG', type: 'core' },
                   aster: { ticker: 'XAUUSDT', type: 'perp' },
                   extended: { ticker: 'XAU-USD', type: 'perp' },
-                  ostium: { ticker: 'XAU', type: 'perp' },
-                  lighter: { ticker: 'XAU', type: 'perp' }
+                  ostium: { ticker: 'XAU', type: 'perp' }
               }
             },
             { id: 'silver', name: 'Silver', category: 'commodity', icon: '🥈',
@@ -270,8 +269,7 @@
             hyperliquid: { name: 'Hyperliquid', status: 'loading', prices: {} },
             aster: { name: 'Aster', status: 'loading', prices: {} },
             extended: { name: 'Extended', status: 'loading', prices: {} },
-            ostium: { name: 'Ostium', status: 'loading', prices: {} },
-            lighter: { name: 'Lighter', status: 'loading', prices: {} }
+            ostium: { name: 'Ostium', status: 'loading', prices: {} }
         };
 
         let priceData = {};
@@ -359,38 +357,16 @@
             }
         }
 
-        // Lighter API (via proxy for reliability)
-        async function fetchLighter() {
-            try {
-                const response = await fetch('/api/lighter');
-                const data = await response.json();
-                const prices = {};
-                if (data.markets) {
-                    data.markets.forEach(market => {
-                        prices[market.ticker] = parseFloat(market.mark_price || market.index_price);
-                    });
-                }
-                apiStatus.lighter.status = 'live';
-                apiStatus.lighter.prices = prices;
-                return prices;
-            } catch (error) {
-                console.error('Lighter error:', error);
-                apiStatus.lighter.status = 'error';
-                return null;
-            }
-        }
-
         // Update all prices
         async function updatePrices() {
             document.getElementById('statusDot').className = 'status-dot loading';
             
             // Fetch all APIs in parallel
-            const [hlData, asterData, extendedData, ostiumData, lighterData] = await Promise.all([
+            const [hlData, asterData, extendedData, ostiumData] = await Promise.all([
                 fetchHyperliquid(),
                 fetchAster(),
                 fetchExtended(),
-                fetchOstium(),
-                fetchLighter()
+                fetchOstium()
             ]);
 
             // Process prices for each asset
@@ -412,9 +388,6 @@
                         isLive = !!price;
                     } else if (dex === 'ostium' && ostiumData) {
                         price = ostiumData[info.ticker];
-                        isLive = !!price;
-                    } else if (dex === 'lighter' && lighterData) {
-                        price = lighterData[info.ticker];
                         isLive = !!price;
                     }
 
