@@ -1,0 +1,8 @@
+{
+  "name": "rwa-arb-scanner",
+  "version": "1.0.0",
+  "description": "RWA Perp DEX Arbitrage Scanner",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
