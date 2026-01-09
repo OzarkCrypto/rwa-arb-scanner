@@ -1,8 +1,4 @@
-export const config = {
-  runtime: 'edge',
-};
-
-export default async function handler(req) {
+export default async function handler(req, res) {
   try {
     const response = await fetch('https://api.starknet.extended.exchange/api/v1/info/markets', {
       headers: {
@@ -12,21 +8,11 @@ export default async function handler(req) {
     
     const data = await response.json();
     
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'max-age=5',
-      },
-    });
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'max-age=5');
+    res.status(200).json(data);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.status(500).json({ error: error.message });
   }
 }
