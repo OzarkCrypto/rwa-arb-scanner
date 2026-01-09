@@ -245,21 +245,18 @@
               dexs: {
                   hyperliquid: { ticker: 'PAXG', type: 'core' },
                   aster: { ticker: 'XAUUSDT', type: 'perp' },
-                  extended: { ticker: 'XAU-USD', type: 'perp' },
-                  ostium: { ticker: 'XAU', type: 'perp' }
+                  extended: { ticker: 'XAU-USD', type: 'perp' }
               }
             },
             { id: 'silver', name: 'Silver', category: 'commodity', icon: '🥈',
               dexs: {
                   aster: { ticker: 'XAGUSDT', type: 'perp' },
-                  extended: { ticker: 'XAG-USD', type: 'perp' },
-                  ostium: { ticker: 'XAG', type: 'perp' }
+                  extended: { ticker: 'XAG-USD', type: 'perp' }
               }
             },
             { id: 'eurusd', name: 'EUR/USD', category: 'forex', icon: '💶',
               dexs: {
-                  extended: { ticker: 'EUR-USD', type: 'perp' },
-                  ostium: { ticker: 'EURUSD', type: 'perp' }
+                  extended: { ticker: 'EUR-USD', type: 'perp' }
               }
             }
         ];
@@ -268,8 +265,7 @@
         const apiStatus = {
             hyperliquid: { name: 'Hyperliquid', status: 'loading', prices: {} },
             aster: { name: 'Aster', status: 'loading', prices: {} },
-            extended: { name: 'Extended', status: 'loading', prices: {} },
-            ostium: { name: 'Ostium', status: 'loading', prices: {} }
+            extended: { name: 'Extended', status: 'loading', prices: {} }
         };
 
         let priceData = {};
@@ -336,37 +332,15 @@
             }
         }
 
-        // Ostium API (via proxy)
-        async function fetchOstium() {
-            try {
-                const response = await fetch('/api/ostium');
-                const data = await response.json();
-                const prices = {};
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        prices[item.asset] = parseFloat(item.price);
-                    });
-                }
-                apiStatus.ostium.status = 'live';
-                apiStatus.ostium.prices = prices;
-                return prices;
-            } catch (error) {
-                console.error('Ostium error:', error);
-                apiStatus.ostium.status = 'error';
-                return null;
-            }
-        }
-
         // Update all prices
         async function updatePrices() {
             document.getElementById('statusDot').className = 'status-dot loading';
             
             // Fetch all APIs in parallel
-            const [hlData, asterData, extendedData, ostiumData] = await Promise.all([
+            const [hlData, asterData, extendedData] = await Promise.all([
                 fetchHyperliquid(),
                 fetchAster(),
-                fetchExtended(),
-                fetchOstium()
+                fetchExtended()
             ]);
 
             // Process prices for each asset
@@ -385,9 +359,6 @@
                         isLive = !!price;
                     } else if (dex === 'extended' && extendedData) {
                         price = extendedData[info.ticker];
-                        isLive = !!price;
-                    } else if (dex === 'ostium' && ostiumData) {
-                        price = ostiumData[info.ticker];
                         isLive = !!price;
                     }
 
