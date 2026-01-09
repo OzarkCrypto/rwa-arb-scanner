@@ -1,18 +1,42 @@
 export default async function handler(req, res) {
-  try {
-    const response = await fetch('https://metadata-backend.ostium.io/PricePublish/latest-prices', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-      },
-    });
-    
-    const data = await response.json();
-    
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Cache-Control', 'max-age=5');
-    res.status(200).json(data);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).end();
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const response = await fetch('https://metadata-backend.ostium.io/PricePublish/latest-prices', {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; RWA-Scanner/1.0)',
+        'Accept': 'application/json',
+      },
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 's-maxage=5, stale-while-revalidate');
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).json(data);
   } catch (error) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ 
+      error: error.message,
+      name: error.name 
+    });
   }
 }
