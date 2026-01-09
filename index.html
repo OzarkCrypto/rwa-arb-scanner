@@ -7,24 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-hover: #f1f3f4;
-            --border: #e1e4e8;
-            --text: #1a1a1a;
-            --text-secondary: #586069;
-            --text-muted: #8b949e;
-            --accent: #0969da;
-            --green: #1a7f37;
-            --red: #cf222e;
-            --gold: #9a6700;
-            --purple: #8250df;
+            --bg: #ffffff; --bg-secondary: #f8f9fa; --bg-hover: #f1f3f4; --border: #e1e4e8;
+            --text: #1a1a1a; --text-secondary: #586069; --text-muted: #8b949e;
+            --accent: #0969da; --green: #1a7f37; --red: #cf222e; --gold: #9a6700; --purple: #8250df;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
         .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
-        
-        /* Header */
         header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
         .logo { display: flex; align-items: center; gap: 10px; }
         .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, #f59e0b, #ea580c); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: #fff; }
@@ -35,45 +24,35 @@
         .btn:hover { background: var(--bg-secondary); }
         .status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
         .status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
+        .status-dot.error { background: var(--red); }
         .last-update { font-size: 11px; color: var(--text-muted); }
-
-        /* Section */
         .section { margin-bottom: 20px; }
         .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
         .section-title::before { content: ''; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; }
-
-        /* DEX Grid */
-        .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+        .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
         .dex-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-        .dex-card:hover { border-color: var(--accent); }
-        .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .dex-info { display: flex; align-items: center; gap: 8px; }
-        .dex-logo { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 10px; }
+        .dex-logo { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 9px; }
         .dex-logo.hl { background: #0ea5e9; color: #fff; }
-        .dex-logo.lighter { background: #f97316; color: #fff; }
         .dex-logo.ostium { background: #eab308; color: #000; }
+        .dex-logo.lighter { background: #f97316; color: #fff; }
         .dex-logo.extended { background: #8b5cf6; color: #fff; }
         .dex-logo.aster { background: #06b6d4; color: #fff; }
-        .dex-logo.variational { background: #10b981; color: #fff; }
-        .dex-logo.pacifica { background: #3b82f6; color: #fff; }
         .dex-name { font-weight: 600; font-size: 13px; }
         .dex-chain { font-size: 10px; color: var(--text-muted); }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; text-transform: uppercase; }
-        .badge-active { background: #dcfce7; color: var(--green); }
-        .badge-limited { background: #fef3c7; color: var(--gold); }
-        .badge-none { background: var(--bg-secondary); color: var(--text-muted); }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; }
+        .badge-live { background: #dcfce7; color: var(--green); }
+        .badge-sim { background: #fef3c7; color: var(--gold); }
         .rwa-assets { display: flex; flex-wrap: wrap; gap: 4px; }
         .chip { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500; font-family: 'IBM Plex Mono', monospace; }
         .chip.commodity { background: #fef3c7; color: #92400e; }
         .chip.forex { background: #dbeafe; color: #1e40af; }
         .chip.equity { background: #f3e8ff; color: #6b21a8; }
         .chip.index { background: #dcfce7; color: #166534; }
-        .no-rwa { font-size: 11px; color: var(--text-muted); font-style: italic; }
-
-        /* Tables */
         .table-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; color: var(--text-secondary); background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
+        th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
         td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: var(--bg-hover); }
@@ -82,8 +61,6 @@
         .asset-icon.gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; }
         .asset-icon.spx { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
         .asset-icon.eur { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
-        .asset-icon.oil { background: #374151; color: #fff; }
-        .asset-icon.stock { background: linear-gradient(135deg, #a855f7, #7c3aed); color: #fff; }
         .asset-name { font-weight: 600; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
         .asset-type { font-size: 10px; color: var(--text-muted); }
         .mono { font-family: 'IBM Plex Mono', monospace; }
@@ -94,32 +71,33 @@
         .spread-fill { height: 100%; border-radius: 2px; }
         .spread-fill.green { background: var(--green); }
         .spread-fill.yellow { background: #eab308; }
-        .btn-sm { padding: 4px 8px; font-size: 11px; background: var(--accent); color: #fff; border: none; border-radius: 4px; }
-        .btn-sm:hover { background: #0860ca; }
-
-        /* Strategy Panel */
+        .btn-sm { padding: 4px 8px; font-size: 11px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
         .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
         @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
         .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-        .panel-title { font-size: 12px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .panel-title { font-size: 12px; font-weight: 600; margin-bottom: 12px; }
         .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-label { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
         .form-input, .form-select { padding: 8px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
-        .form-input:focus, .form-select:focus { outline: none; border-color: var(--accent); }
         .full-width { grid-column: span 3; }
-        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: 500; }
-        .btn-primary:hover { background: #0860ca; }
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: 500; cursor: pointer; }
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .stat-card { background: var(--bg-secondary); border-radius: 6px; padding: 12px; }
         .stat-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
         .stat-value { font-size: 20px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
         .stat-note { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
-
-        .info-bar { background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: #92400e; display: flex; align-items: center; gap: 8px; }
+        .info-bar { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: #1e40af; }
+        .api-status { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+        .api-item { display: flex; align-items: center; gap: 4px; font-size: 10px; }
+        .api-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .api-dot.live { background: var(--green); }
+        .api-dot.sim { background: var(--gold); }
         .empty-row td { text-align: center; padding: 30px; color: var(--text-muted); }
         .loading { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .price-live { color: var(--green); }
+        .price-sim { color: var(--gold); }
     </style>
 </head>
 <body>
@@ -132,80 +110,28 @@
             <div class="header-actions">
                 <span class="last-update" id="lastUpdate">--</span>
                 <button class="btn" onclick="refreshData()"><span id="refreshIcon">↻</span> 새로고침</button>
-                <div class="status"><div class="status-dot"></div>Live</div>
+                <div class="status"><div class="status-dot" id="mainStatus"></div><span id="statusText">연결중...</span></div>
             </div>
         </header>
 
-        <div class="info-bar">💡 <strong>전략:</strong> 동일 RWA 여러 DEX 상장 → 저평가 Long + 고평가 Short = 델타중립 차익</div>
-
-        <div class="section">
-            <div class="section-title">Perp DEX RWA 현황</div>
-            <div class="dex-grid">
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo hl">HL</div><div><div class="dex-name">Hyperliquid</div><div class="dex-chain">L1 · 100x</div></div></div>
-                        <span class="badge badge-limited">Limited</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip commodity">PAXG</span><span class="chip index">SPX</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo lighter">LT</div><div><div class="dex-name">Lighter</div><div class="dex-chain">ETH ZK · 50x</div></div></div>
-                        <span class="badge badge-active">Active</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip forex">EUR</span><span class="chip forex">GBP</span><span class="chip equity">COIN</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo ostium">OS</div><div><div class="dex-name">Ostium</div><div class="dex-chain">Arbitrum · 200x</div></div></div>
-                        <span class="badge badge-active">RWA특화</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip commodity">XAG</span><span class="chip commodity">WTI</span><span class="chip forex">EUR</span><span class="chip forex">GBP</span><span class="chip forex">JPY</span><span class="chip index">SPX</span><span class="chip index">NDX</span><span class="chip equity">TSLA</span><span class="chip equity">AAPL</span><span class="chip equity">NVDA</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo extended">EX</div><div><div class="dex-name">Extended</div><div class="dex-chain">Starknet · 100x</div></div></div>
-                        <span class="badge badge-active">Active</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip commodity">Brent</span><span class="chip forex">EUR</span><span class="chip index">SPX</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo aster">AS</div><div><div class="dex-name">Aster</div><div class="dex-chain">Multi · 1001x</div></div></div>
-                        <span class="badge badge-limited">Limited</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip equity">AAPL</span><span class="chip equity">TSLA</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo variational">VA</div><div><div class="dex-name">Variational</div><div class="dex-chain">Arbitrum</div></div></div>
-                        <span class="badge badge-limited">Beta</span>
-                    </div>
-                    <div class="rwa-assets"><span class="chip index">RWA예정</span></div>
-                </div>
-                <div class="dex-card">
-                    <div class="dex-header">
-                        <div class="dex-info"><div class="dex-logo pacifica">PA</div><div><div class="dex-name">Pacifica</div><div class="dex-chain">Solana · 50x</div></div></div>
-                        <span class="badge badge-none">None</span>
-                    </div>
-                    <div class="rwa-assets"><span class="no-rwa">RWA 없음</span></div>
-                </div>
+        <div class="info-bar">
+            📡 <strong>API 상태</strong>
+            <div class="api-status">
+                <div class="api-item"><div class="api-dot live" id="hlDot"></div>Hyperliquid (Live)</div>
+                <div class="api-item"><div class="api-dot sim"></div>Ostium (Sim)</div>
+                <div class="api-item"><div class="api-dot sim"></div>Lighter (Sim)</div>
+                <div class="api-item"><div class="api-dot sim"></div>Extended (Sim)</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">크로스 상장 자산</div>
-            <div class="table-wrap">
-                <table>
-                    <thead><tr><th>자산</th><th>카테고리</th><th>상장 DEX</th><th>기회</th></tr></thead>
-                    <tbody>
-                        <tr><td><div class="asset-cell"><div class="asset-icon gold">Au</div><div><div class="asset-name">XAU</div><div class="asset-type">Gold</div></div></div></td><td><span class="chip commodity">원자재</span></td><td class="mono" style="font-size:11px">HL, Lighter, Ostium, Extended, Aster</td><td class="text-green">✓ 5개 DEX</td></tr>
-                        <tr><td><div class="asset-cell"><div class="asset-icon spx">SP</div><div><div class="asset-name">SPX</div><div class="asset-type">S&P500</div></div></div></td><td><span class="chip index">지수</span></td><td class="mono" style="font-size:11px">HL, Ostium, Extended</td><td class="text-green">✓ 3개 DEX</td></tr>
-                        <tr><td><div class="asset-cell"><div class="asset-icon eur">€$</div><div><div class="asset-name">EUR/USD</div><div class="asset-type">Forex</div></div></div></td><td><span class="chip forex">외환</span></td><td class="mono" style="font-size:11px">Lighter, Ostium, Extended</td><td class="text-green">✓ 3개 DEX</td></tr>
-                        <tr><td><div class="asset-cell"><div class="asset-icon oil">Oil</div><div><div class="asset-name">WTI/Brent</div><div class="asset-type">Crude</div></div></div></td><td><span class="chip commodity">원자재</span></td><td class="mono" style="font-size:11px">Ostium, Extended</td><td class="text-muted">△ 2개</td></tr>
-                        <tr><td><div class="asset-cell"><div class="asset-icon stock">St</div><div><div class="asset-name">TSLA/AAPL</div><div class="asset-type">Stock</div></div></div></td><td><span class="chip equity">주식</span></td><td class="mono" style="font-size:11px">Ostium, Aster</td><td class="text-muted">△ 2개</td></tr>
-                    </tbody>
-                </table>
+            <div class="section-title">DEX RWA 마켓</div>
+            <div class="dex-grid">
+                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo hl">HL</div><div><div class="dex-name">Hyperliquid</div><div class="dex-chain">L1 · 100x</div></div></div><span class="badge badge-live">● LIVE</span></div><div class="rwa-assets"><span class="chip commodity">PAXG</span><span class="chip index">SPX</span></div></div>
+                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo ostium">OS</div><div><div class="dex-name">Ostium</div><div class="dex-chain">Arbitrum · 200x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip commodity">XAG</span><span class="chip forex">EUR</span><span class="chip index">SPX</span><span class="chip equity">TSLA</span></div></div>
+                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo lighter">LT</div><div><div class="dex-name">Lighter</div><div class="dex-chain">ETH ZK · 50x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip forex">EUR</span><span class="chip equity">COIN</span></div></div>
+                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo extended">EX</div><div><div class="dex-name">Extended</div><div class="dex-chain">Starknet · 100x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip forex">EUR</span><span class="chip index">SPX</span></div></div>
+                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo aster">AS</div><div><div class="dex-name">Aster</div><div class="dex-chain">Multi · 1001x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip equity">TSLA</span></div></div>
             </div>
         </div>
 
@@ -221,50 +147,85 @@
 
         <div class="grid-2">
             <div class="panel">
-                <div class="panel-title">전략 시뮬레이터 <span style="font-size:10px;color:var(--text-muted)">시뮬레이션</span></div>
+                <div class="panel-title">전략 시뮬레이터</div>
                 <div class="form-grid">
-                    <div class="form-group"><label class="form-label">자산</label><select class="form-select" id="targetAsset"><option value="XAU">Gold (XAU)</option><option value="SPX">S&P 500</option><option value="EURUSD">EUR/USD</option></select></div>
+                    <div class="form-group"><label class="form-label">자산</label><select class="form-select" id="targetAsset"><option value="XAU">Gold</option><option value="SPX">S&P 500</option><option value="EURUSD">EUR/USD</option></select></div>
                     <div class="form-group"><label class="form-label">사이즈 ($)</label><input type="number" class="form-input" id="positionSize" value="10000" /></div>
                     <div class="form-group"><label class="form-label">레버리지</label><select class="form-select" id="leverage"><option value="1">1x</option><option value="2">2x</option><option value="3" selected>3x</option><option value="5">5x</option><option value="10">10x</option></select></div>
-                    <div class="form-group"><label class="form-label">Long DEX</label><select class="form-select" id="longDex"><option value="hyperliquid">Hyperliquid</option><option value="lighter">Lighter</option><option value="ostium" selected>Ostium</option><option value="extended">Extended</option></select></div>
-                    <div class="form-group"><label class="form-label">Short DEX</label><select class="form-select" id="shortDex"><option value="hyperliquid" selected>Hyperliquid</option><option value="lighter">Lighter</option><option value="ostium">Ostium</option><option value="extended">Extended</option></select></div>
-                    <div class="form-group"><label class="form-label">최소 스프레드</label><input type="number" class="form-input" id="minSpread" value="0.05" step="0.01" /></div>
+                    <div class="form-group"><label class="form-label">Long DEX</label><select class="form-select" id="longDex"><option value="hyperliquid">Hyperliquid</option><option value="ostium" selected>Ostium</option><option value="lighter">Lighter</option><option value="extended">Extended</option></select></div>
+                    <div class="form-group"><label class="form-label">Short DEX</label><select class="form-select" id="shortDex"><option value="hyperliquid" selected>Hyperliquid</option><option value="ostium">Ostium</option><option value="lighter">Lighter</option><option value="extended">Extended</option></select></div>
+                    <div class="form-group"><label class="form-label">펀딩차</label><input type="number" class="form-input" id="fundingDiff" value="0.01" step="0.001" /></div>
                     <div class="form-group full-width"><button class="btn-primary" onclick="calculateStrategy()">계산</button></div>
                 </div>
             </div>
             <div class="panel">
                 <div class="panel-title">예상 수익</div>
                 <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-label">스프레드</div><div class="stat-value text-gold" id="currentSpread">0.12%</div></div>
-                    <div class="stat-card"><div class="stat-label">일일 PnL</div><div class="stat-value text-green" id="dailyPnl">$12.00</div><div class="stat-note" id="dailyNote">3x 레버리지</div></div>
-                    <div class="stat-card"><div class="stat-label">연환산 APY</div><div class="stat-value text-gold" id="annualApy">43.8%</div><div class="stat-note">수수료 미포함</div></div>
-                    <div class="stat-card"><div class="stat-label">리스크</div><div class="stat-value" id="riskLevel" style="color:var(--gold)">Medium</div><div class="stat-note" id="riskNote">오라클 리스크</div></div>
+                    <div class="stat-card"><div class="stat-label">스프레드</div><div class="stat-value text-gold" id="currentSpread">--%</div></div>
+                    <div class="stat-card"><div class="stat-label">일일 PnL</div><div class="stat-value text-green" id="dailyPnl">$--</div><div class="stat-note" id="dailyNote">레버리지 적용</div></div>
+                    <div class="stat-card"><div class="stat-label">연환산 APY</div><div class="stat-value text-gold" id="annualApy">--%</div></div>
+                    <div class="stat-card"><div class="stat-label">리스크</div><div class="stat-value" id="riskLevel" style="color:var(--gold)">--</div><div class="stat-note" id="riskNote">--</div></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let priceData = { XAU: { hyperliquid: 4477.05, lighter: 4478.20, ostium: 4476.80, extended: 4477.50, aster: 4478.00 }, SPX: { hyperliquid: 5823.45, ostium: 5822.80, extended: 5824.10 }, EURUSD: { lighter: 1.0312, ostium: 1.0310, extended: 1.0314 } };
-        
-        async function fetchHL() {
+        let priceData = {
+            XAU: { hyperliquid: 0, ostium: 0, lighter: 0, extended: 0, aster: 0 },
+            SPX: { hyperliquid: 0, ostium: 0, extended: 0 },
+            EURUSD: { lighter: 0, ostium: 0, extended: 0 }
+        };
+        let apiStatus = { hyperliquid: false };
+
+        async function fetchHyperliquid() {
             try {
-                const r = await fetch('https://api.hyperliquid.xyz/info', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'allMids' }) });
+                const r = await fetch('https://api.hyperliquid.xyz/info', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'allMids' })
+                });
                 const d = await r.json();
                 if (d.PAXG) priceData.XAU.hyperliquid = parseFloat(d.PAXG);
-                return d;
-            } catch (e) { return null; }
+                apiStatus.hyperliquid = true;
+                document.getElementById('hlDot').className = 'api-dot live';
+                return true;
+            } catch (e) {
+                apiStatus.hyperliquid = false;
+                document.getElementById('hlDot').className = 'api-dot sim';
+                return false;
+            }
+        }
+
+        function simulate() {
+            const base = priceData.XAU.hyperliquid > 0 ? priceData.XAU.hyperliquid : 2650;
+            priceData.XAU.ostium = base * (1 + (Math.random() - 0.5) * 0.001);
+            priceData.XAU.lighter = base * (1 + (Math.random() - 0.5) * 0.001);
+            priceData.XAU.extended = base * (1 + (Math.random() - 0.5) * 0.001);
+            priceData.XAU.aster = base * (1 + (Math.random() - 0.5) * 0.001);
+            priceData.SPX.ostium = 5850 * (1 + (Math.random() - 0.5) * 0.0005);
+            priceData.SPX.extended = 5852 * (1 + (Math.random() - 0.5) * 0.0005);
+            priceData.EURUSD.ostium = 1.0310 * (1 + (Math.random() - 0.5) * 0.0002);
+            priceData.EURUSD.lighter = 1.0312 * (1 + (Math.random() - 0.5) * 0.0002);
+            priceData.EURUSD.extended = 1.0314 * (1 + (Math.random() - 0.5) * 0.0002);
         }
 
         function findArb() {
             const ops = [];
-            for (const [a, data] of Object.entries(priceData)) {
-                const dexs = Object.entries(data).filter(([_, p]) => p > 0);
-                if (dexs.length < 2) continue;
-                let min = dexs[0], max = dexs[0];
-                for (const [d, p] of dexs) { if (p < min[1]) min = [d, p]; if (p > max[1]) max = [d, p]; }
-                const sp = ((max[1] - min[1]) / min[1] * 100);
-                if (sp > 0.01) ops.push({ asset: a, name: { XAU: 'Gold', SPX: 'S&P500', EURUSD: 'EUR/USD' }[a], type: { XAU: 'commodity', SPX: 'index', EURUSD: 'forex' }[a], longDex: min[0], longPrice: min[1], shortDex: max[0], shortPrice: max[1], spread: sp, apy: (sp * 365).toFixed(1) });
+            for (const [asset, prices] of Object.entries(priceData)) {
+                const valid = Object.entries(prices).filter(([_, p]) => p > 0);
+                if (valid.length < 2) continue;
+                let min = valid[0], max = valid[0];
+                for (const [d, p] of valid) { if (p < min[1]) min = [d, p]; if (p > max[1]) max = [d, p]; }
+                const spread = ((max[1] - min[1]) / min[1]) * 100;
+                if (spread > 0.001) {
+                    ops.push({
+                        asset, name: { XAU: 'Gold', SPX: 'S&P 500', EURUSD: 'EUR/USD' }[asset],
+                        type: { XAU: 'commodity', SPX: 'index', EURUSD: 'forex' }[asset],
+                        longDex: min[0], longPrice: min[1], longLive: apiStatus[min[0]],
+                        shortDex: max[0], shortPrice: max[1], shortLive: apiStatus[max[0]],
+                        spread, apy: (spread * 365).toFixed(1)
+                    });
+                }
             }
             return ops.sort((a, b) => b.spread - a.spread);
         }
@@ -276,14 +237,14 @@
             let h = '';
             ops.forEach(o => {
                 const ic = o.type === 'commodity' ? 'gold' : o.type === 'index' ? 'spx' : 'eur';
-                const fp = (p) => p >= 1000 ? p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(4);
-                const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-                const bw = Math.min(o.spread * 50, 100);
+                const fp = p => p >= 100 ? p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(4);
+                const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+                const bw = Math.min(o.spread * 100, 100);
                 h += `<tr>
                     <td><div class="asset-cell"><div class="asset-icon ${ic}">${o.asset.substring(0,2)}</div><div><div class="asset-name">${o.asset}</div><div class="asset-type">${o.name}</div></div></div></td>
-                    <td>${cap(o.longDex)}</td><td class="mono">$${fp(o.longPrice)}</td>
-                    <td>${cap(o.shortDex)}</td><td class="mono">$${fp(o.shortPrice)}</td>
-                    <td class="mono ${o.spread >= 0.1 ? 'text-green' : ''}">${o.spread.toFixed(3)}%<div class="spread-bar"><div class="spread-fill ${o.spread >= 0.1 ? 'green' : 'yellow'}" style="width:${bw}%"></div></div></td>
+                    <td>${cap(o.longDex)}</td><td class="mono ${o.longLive ? 'price-live' : 'price-sim'}">$${fp(o.longPrice)}</td>
+                    <td>${cap(o.shortDex)}</td><td class="mono ${o.shortLive ? 'price-live' : 'price-sim'}">$${fp(o.shortPrice)}</td>
+                    <td class="mono ${o.spread >= 0.05 ? 'text-green' : ''}">${o.spread.toFixed(4)}%<div class="spread-bar"><div class="spread-fill ${o.spread >= 0.05 ? 'green' : 'yellow'}" style="width:${bw}%"></div></div></td>
                     <td class="mono text-gold">${o.apy}%</td>
                     <td><button class="btn-sm" onclick="sel('${o.asset}','${o.longDex}','${o.shortDex}')">분석</button></td>
                 </tr>`;
@@ -291,12 +252,7 @@
             tb.innerHTML = h;
         }
 
-        function sel(a, l, s) {
-            document.getElementById('targetAsset').value = a;
-            document.getElementById('longDex').value = l;
-            document.getElementById('shortDex').value = s;
-            calculateStrategy();
-        }
+        function sel(a, l, s) { document.getElementById('targetAsset').value = a; document.getElementById('longDex').value = l; document.getElementById('shortDex').value = s; calculateStrategy(); }
 
         function calculateStrategy() {
             const a = document.getElementById('targetAsset').value;
@@ -304,18 +260,19 @@
             const lv = parseInt(document.getElementById('leverage').value);
             const ld = document.getElementById('longDex').value;
             const sd = document.getElementById('shortDex').value;
+            const fd = parseFloat(document.getElementById('fundingDiff').value) || 0;
             const lp = priceData[a]?.[ld] || 0, sp = priceData[a]?.[sd] || 0;
             if (!lp || !sp) { document.getElementById('currentSpread').textContent = 'N/A'; return; }
             const spr = Math.abs((sp - lp) / lp * 100);
-            const daily = sz * lv * (spr / 100);
-            const apy = spr * 365 * lv;
+            const daily = sz * lv * ((spr + fd * 3) / 100);
+            const apy = (spr + fd * 365 * 3) * lv;
             document.getElementById('currentSpread').textContent = spr.toFixed(4) + '%';
             document.getElementById('dailyPnl').textContent = '$' + daily.toFixed(2);
             document.getElementById('dailyNote').textContent = `${lv}x 레버리지`;
             document.getElementById('annualApy').textContent = apy.toFixed(1) + '%';
             let rk = 'Low', rc = 'var(--green)', rn = '낮은 리스크';
             if (lv >= 10) { rk = 'High'; rc = 'var(--red)'; rn = '청산 리스크'; }
-            else if (lv >= 5 || spr < 0.05) { rk = 'Medium'; rc = 'var(--gold)'; rn = '오라클 리스크'; }
+            else if (lv >= 5 || spr < 0.03) { rk = 'Medium'; rc = 'var(--gold)'; rn = '오라클 리스크'; }
             document.getElementById('riskLevel').textContent = rk;
             document.getElementById('riskLevel').style.color = rc;
             document.getElementById('riskNote').textContent = rn;
@@ -324,16 +281,19 @@
         async function refreshData() {
             const ri = document.getElementById('refreshIcon');
             ri.style.animation = 'spin 0.6s linear infinite';
-            await fetchHL();
-            for (const a of Object.keys(priceData)) for (const d of Object.keys(priceData[a])) priceData[a][d] *= (1 + (Math.random() - 0.5) * 0.001);
+            document.getElementById('statusText').textContent = '업데이트중...';
+            const ok = await fetchHyperliquid();
+            simulate();
             updateTable();
             calculateStrategy();
+            document.getElementById('mainStatus').className = ok ? 'status-dot' : 'status-dot error';
+            document.getElementById('statusText').textContent = ok ? 'Live' : 'Error';
             document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('ko-KR');
-            setTimeout(() => { ri.style.animation = ''; }, 600);
+            setTimeout(() => ri.style.animation = '', 600);
         }
 
         refreshData();
-        setInterval(refreshData, 30000);
+        setInterval(refreshData, 15000);
     </script>
 </body>
 </html>
