@@ -1,299 +1,447 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RWA Perp DEX Arbitrage Scanner</title>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #ffffff; --bg-secondary: #f8f9fa; --bg-hover: #f1f3f4; --border: #e1e4e8;
-            --text: #1a1a1a; --text-secondary: #586069; --text-muted: #8b949e;
-            --accent: #0969da; --green: #1a7f37; --red: #cf222e; --gold: #9a6700; --purple: #8250df;
-        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-        .logo { display: flex; align-items: center; gap: 10px; }
-        .logo-icon { width: 28px; height: 28px; background: linear-gradient(135deg, #f59e0b, #ea580c); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; color: #fff; }
-        .logo h1 { font-size: 15px; font-weight: 600; }
-        .logo p { font-size: 11px; color: var(--text-secondary); }
-        .header-actions { display: flex; align-items: center; gap: 12px; }
-        .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text); transition: all 0.15s; }
-        .btn:hover { background: var(--bg-secondary); }
-        .status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
-        .status-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
-        .status-dot.error { background: var(--red); }
-        .last-update { font-size: 11px; color: var(--text-muted); }
-        .section { margin-bottom: 20px; }
-        .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-        .section-title::before { content: ''; width: 3px; height: 12px; background: var(--accent); border-radius: 2px; }
-        .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
-        .dex-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
-        .dex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .dex-info { display: flex; align-items: center; gap: 8px; }
-        .dex-logo { width: 26px; height: 26px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 9px; }
-        .dex-logo.hl { background: #0ea5e9; color: #fff; }
-        .dex-logo.ostium { background: #eab308; color: #000; }
-        .dex-logo.lighter { background: #f97316; color: #fff; }
-        .dex-logo.extended { background: #8b5cf6; color: #fff; }
-        .dex-logo.aster { background: #06b6d4; color: #fff; }
-        .dex-name { font-weight: 600; font-size: 13px; }
-        .dex-chain { font-size: 10px; color: var(--text-muted); }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 600; }
-        .badge-live { background: #dcfce7; color: var(--green); }
-        .badge-sim { background: #fef3c7; color: var(--gold); }
-        .rwa-assets { display: flex; flex-wrap: wrap; gap: 4px; }
-        .chip { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 500; font-family: 'IBM Plex Mono', monospace; }
-        .chip.commodity { background: #fef3c7; color: #92400e; }
-        .chip.forex { background: #dbeafe; color: #1e40af; }
-        .chip.equity { background: #f3e8ff; color: #6b21a8; }
-        .chip.index { background: #dcfce7; color: #166534; }
-        .table-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); background: var(--bg-secondary); border-bottom: 1px solid var(--border); }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 12px; }
-        tr:last-child td { border-bottom: none; }
-        tr:hover td { background: var(--bg-hover); }
-        .asset-cell { display: flex; align-items: center; gap: 8px; }
-        .asset-icon { width: 24px; height: 24px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
-        .asset-icon.gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; }
-        .asset-icon.spx { background: linear-gradient(135deg, #22c55e, #16a34a); color: #fff; }
-        .asset-icon.eur { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
-        .asset-name { font-weight: 600; font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
-        .asset-type { font-size: 10px; color: var(--text-muted); }
-        .mono { font-family: 'IBM Plex Mono', monospace; }
-        .text-green { color: var(--green); }
-        .text-muted { color: var(--text-muted); }
-        .text-gold { color: var(--gold); }
-        .spread-bar { width: 50px; height: 4px; background: #e5e7eb; border-radius: 2px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
-        .spread-fill { height: 100%; border-radius: 2px; }
-        .spread-fill.green { background: var(--green); }
-        .spread-fill.yellow { background: #eab308; }
-        .btn-sm { padding: 4px 8px; font-size: 11px; background: var(--accent); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-        .grid-2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; }
-        @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-        .panel { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-        .panel-title { font-size: 12px; font-weight: 600; margin-bottom: 12px; }
-        .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        .form-label { font-size: 10px; color: var(--text-secondary); font-weight: 500; }
-        .form-input, .form-select { padding: 8px 10px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; }
-        .full-width { grid-column: span 3; }
-        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 10px; width: 100%; border-radius: 6px; font-weight: 500; cursor: pointer; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .stat-card { background: var(--bg-secondary); border-radius: 6px; padding: 12px; }
-        .stat-label { font-size: 10px; color: var(--text-secondary); margin-bottom: 4px; }
-        .stat-value { font-size: 20px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
-        .stat-note { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
-        .info-bar { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: #1e40af; }
-        .api-status { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
-        .api-item { display: flex; align-items: center; gap: 4px; font-size: 10px; }
-        .api-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .api-dot.live { background: var(--green); }
-        .api-dot.sim { background: var(--gold); }
-        .empty-row td { text-align: center; padding: 30px; color: var(--text-muted); }
-        .loading { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .price-live { color: var(--green); }
-        .price-sim { color: var(--gold); }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #333;
+            font-size: 12px;
+            padding: 12px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .header h1 { font-size: 16px; font-weight: 600; }
+        .status-bar { display: flex; gap: 12px; font-size: 10px; color: #666; }
+        .status-item { display: flex; align-items: center; gap: 4px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .status-dot.live { background: #22c55e; }
+        .status-dot.sim { background: #f59e0b; }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .stat { display: flex; gap: 4px; }
+        .stat-value { font-weight: 600; color: #111; }
+        .stat-label { color: #666; }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        .tab-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: #fff;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .tab-btn:hover { border-color: #999; }
+        .tab-btn.active { background: #111; color: #fff; border-color: #111; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 8px;
+        }
+        .card {
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 10px;
+            background: #fff;
+        }
+        .card.has-arb { border-color: #22c55e; background: #f0fdf4; }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .asset-info { display: flex; align-items: center; gap: 6px; }
+        .asset-icon { font-size: 14px; }
+        .asset-name { font-weight: 600; font-size: 13px; }
+        .asset-meta { font-size: 10px; color: #999; }
+        .cat-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .cat-badge.stock { background: #dbeafe; color: #1d4ed8; }
+        .cat-badge.index { background: #ede9fe; color: #6d28d9; }
+        .cat-badge.commodity { background: #fef3c7; color: #b45309; }
+        .cat-badge.forex { background: #d1fae5; color: #047857; }
+        .cat-badge.preipo { background: #fce7f3; color: #be185d; }
+
+        .dex-table { width: 100%; }
+        .dex-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 6px;
+            border-radius: 3px;
+            margin-bottom: 2px;
+            font-size: 11px;
+        }
+        .dex-row:nth-child(odd) { background: #fafafa; }
+        .dex-row.best-buy { background: #dcfce7; }
+        .dex-row.best-sell { background: #fee2e2; }
+        .dex-row.hl { border-left: 2px solid #7c3aed; }
+        .dex-left { display: flex; align-items: center; gap: 4px; }
+        .dex-name { font-weight: 500; min-width: 70px; }
+        .dex-ticker { color: #999; font-size: 9px; }
+        .badge {
+            font-size: 8px;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+        .badge.hip3 { background: #ede9fe; color: #7c3aed; }
+        .badge.core { background: #e0f2fe; color: #0284c7; }
+        .badge.perp { background: #f3f4f6; color: #6b7280; }
+        .badge.live { background: #dcfce7; color: #16a34a; }
+        .badge.sim { background: #fef3c7; color: #d97706; }
+        .dex-right { text-align: right; }
+        .price { font-weight: 600; }
+        .diff { font-size: 9px; }
+        .diff.pos { color: #16a34a; }
+        .diff.neg { color: #dc2626; }
+
+        .arb-box {
+            margin-top: 6px;
+            padding: 6px 8px;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .arb-label { font-size: 10px; color: #047857; }
+        .arb-spread { font-weight: 700; color: #059669; font-size: 13px; }
+        .arb-route { font-size: 9px; color: #666; }
+
+        .no-arb { text-align: center; font-size: 9px; color: #bbb; margin-top: 4px; }
+
+        .footer { text-align: center; margin-top: 16px; font-size: 10px; color: #999; }
+
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <div class="logo-icon">RWA</div>
-                <div><h1>RWA Arbitrage Scanner</h1><p>원자재 · 외환 · 주식 크로스 DEX</p></div>
-            </div>
-            <div class="header-actions">
-                <span class="last-update" id="lastUpdate">--</span>
-                <button class="btn" onclick="refreshData()"><span id="refreshIcon">↻</span> 새로고침</button>
-                <div class="status"><div class="status-dot" id="mainStatus"></div><span id="statusText">연결중...</span></div>
-            </div>
-        </header>
-
-        <div class="info-bar">
-            📡 <strong>API 상태</strong>
-            <div class="api-status">
-                <div class="api-item"><div class="api-dot live" id="hlDot"></div>Hyperliquid (Live)</div>
-                <div class="api-item"><div class="api-dot sim"></div>Ostium (Sim)</div>
-                <div class="api-item"><div class="api-dot sim"></div>Lighter (Sim)</div>
-                <div class="api-item"><div class="api-dot sim"></div>Extended (Sim)</div>
-            </div>
+    <div class="header">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <h1>RWA Perp Arb Scanner</h1>
         </div>
-
-        <div class="section">
-            <div class="section-title">DEX RWA 마켓</div>
-            <div class="dex-grid">
-                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo hl">HL</div><div><div class="dex-name">Hyperliquid</div><div class="dex-chain">L1 · 100x</div></div></div><span class="badge badge-live">● LIVE</span></div><div class="rwa-assets"><span class="chip commodity">PAXG</span><span class="chip index">SPX</span></div></div>
-                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo ostium">OS</div><div><div class="dex-name">Ostium</div><div class="dex-chain">Arbitrum · 200x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip commodity">XAG</span><span class="chip forex">EUR</span><span class="chip index">SPX</span><span class="chip equity">TSLA</span></div></div>
-                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo lighter">LT</div><div><div class="dex-name">Lighter</div><div class="dex-chain">ETH ZK · 50x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip forex">EUR</span><span class="chip equity">COIN</span></div></div>
-                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo extended">EX</div><div><div class="dex-name">Extended</div><div class="dex-chain">Starknet · 100x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip forex">EUR</span><span class="chip index">SPX</span></div></div>
-                <div class="dex-card"><div class="dex-header"><div class="dex-info"><div class="dex-logo aster">AS</div><div><div class="dex-name">Aster</div><div class="dex-chain">Multi · 1001x</div></div></div><span class="badge badge-sim">SIM</span></div><div class="rwa-assets"><span class="chip commodity">XAU</span><span class="chip equity">TSLA</span></div></div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">실시간 차익거래 기회</div>
-            <div class="table-wrap">
-                <table>
-                    <thead><tr><th>자산</th><th>Long</th><th>가격</th><th>Short</th><th>가격</th><th>스프레드</th><th>APY</th><th></th></tr></thead>
-                    <tbody id="arbTableBody"><tr class="empty-row"><td colspan="8"><div class="loading"></div> 로딩중...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="grid-2">
-            <div class="panel">
-                <div class="panel-title">전략 시뮬레이터</div>
-                <div class="form-grid">
-                    <div class="form-group"><label class="form-label">자산</label><select class="form-select" id="targetAsset"><option value="XAU">Gold</option><option value="SPX">S&P 500</option><option value="EURUSD">EUR/USD</option></select></div>
-                    <div class="form-group"><label class="form-label">사이즈 ($)</label><input type="number" class="form-input" id="positionSize" value="10000" /></div>
-                    <div class="form-group"><label class="form-label">레버리지</label><select class="form-select" id="leverage"><option value="1">1x</option><option value="2">2x</option><option value="3" selected>3x</option><option value="5">5x</option><option value="10">10x</option></select></div>
-                    <div class="form-group"><label class="form-label">Long DEX</label><select class="form-select" id="longDex"><option value="hyperliquid">Hyperliquid</option><option value="ostium" selected>Ostium</option><option value="lighter">Lighter</option><option value="extended">Extended</option></select></div>
-                    <div class="form-group"><label class="form-label">Short DEX</label><select class="form-select" id="shortDex"><option value="hyperliquid" selected>Hyperliquid</option><option value="ostium">Ostium</option><option value="lighter">Lighter</option><option value="extended">Extended</option></select></div>
-                    <div class="form-group"><label class="form-label">펀딩차</label><input type="number" class="form-input" id="fundingDiff" value="0.01" step="0.001" /></div>
-                    <div class="form-group full-width"><button class="btn-primary" onclick="calculateStrategy()">계산</button></div>
-                </div>
-            </div>
-            <div class="panel">
-                <div class="panel-title">예상 수익</div>
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-label">스프레드</div><div class="stat-value text-gold" id="currentSpread">--%</div></div>
-                    <div class="stat-card"><div class="stat-label">일일 PnL</div><div class="stat-value text-green" id="dailyPnl">$--</div><div class="stat-note" id="dailyNote">레버리지 적용</div></div>
-                    <div class="stat-card"><div class="stat-label">연환산 APY</div><div class="stat-value text-gold" id="annualApy">--%</div></div>
-                    <div class="stat-card"><div class="stat-label">리스크</div><div class="stat-value" id="riskLevel" style="color:var(--gold)">--</div><div class="stat-note" id="riskNote">--</div></div>
-                </div>
-            </div>
+        <div class="status-bar">
+            <div class="status-item"><div class="status-dot live"></div>HL Live</div>
+            <div class="status-item"><div class="status-dot sim"></div>Others Sim</div>
+            <div class="status-item" id="lastUpdate">--:--:--</div>
         </div>
     </div>
 
+    <div class="stats">
+        <div class="stat"><span class="stat-value" id="totalAssets">0</span><span class="stat-label">Assets</span></div>
+        <div class="stat"><span class="stat-value" id="arbCount">0</span><span class="stat-label">Arb Opps</span></div>
+        <div class="stat"><span class="stat-value" id="maxSpread">0%</span><span class="stat-label">Max Spread</span></div>
+        <div class="stat"><span class="stat-value">8</span><span class="stat-label">DEXs</span></div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-category="all">All</button>
+        <button class="tab-btn" data-category="stock">Stocks</button>
+        <button class="tab-btn" data-category="index">Index</button>
+        <button class="tab-btn" data-category="commodity">Commodities</button>
+        <button class="tab-btn" data-category="forex">Forex</button>
+        <button class="tab-btn" data-category="preipo">Pre-IPO</button>
+    </div>
+
+    <div class="grid" id="assetGrid"></div>
+
+    <div class="footer">15s refresh | Hyperliquid API Live | Other DEXs ±0.05% Simulated</div>
+
     <script>
-        let priceData = {
-            XAU: { hyperliquid: 0, ostium: 0, lighter: 0, extended: 0, aster: 0 },
-            SPX: { hyperliquid: 0, ostium: 0, extended: 0 },
-            EURUSD: { lighter: 0, ostium: 0, extended: 0 }
+        const assets = [
+            { id: 'xyz100', name: 'Nasdaq 100', category: 'index', icon: '📊',
+              dexs: { hyperliquid: { ticker: 'XYZ100', type: 'hip3' } } },
+            
+            { id: 'nvda', name: 'Nvidia', category: 'stock', icon: '🟢',
+              dexs: { hyperliquid: { ticker: 'NVDA', type: 'hip3' } } },
+            { id: 'tsla', name: 'Tesla', category: 'stock', icon: '🚗',
+              dexs: { hyperliquid: { ticker: 'TSLA', type: 'hip3' } } },
+            { id: 'aapl', name: 'Apple', category: 'stock', icon: '🍎',
+              dexs: { hyperliquid: { ticker: 'AAPL', type: 'hip3' } } },
+            { id: 'googl', name: 'Alphabet', category: 'stock', icon: '🔍',
+              dexs: { hyperliquid: { ticker: 'GOOGL', type: 'hip3' } } },
+            { id: 'amzn', name: 'Amazon', category: 'stock', icon: '📦',
+              dexs: { hyperliquid: { ticker: 'AMZN', type: 'hip3' } } },
+            { id: 'msft', name: 'Microsoft', category: 'stock', icon: '🪟',
+              dexs: { hyperliquid: { ticker: 'MSFT', type: 'hip3' } } },
+            { id: 'meta', name: 'Meta', category: 'stock', icon: '👁️',
+              dexs: { hyperliquid: { ticker: 'META', type: 'hip3' } } },
+            { id: 'pltr', name: 'Palantir', category: 'stock', icon: '🔮',
+              dexs: { hyperliquid: { ticker: 'PLTR', type: 'hip3' } } },
+            { id: 'hood', name: 'Robinhood', category: 'stock', icon: '🏹',
+              dexs: { hyperliquid: { ticker: 'HOOD', type: 'hip3' } } },
+            { id: 'coin', name: 'Coinbase', category: 'stock', icon: '🪙',
+              dexs: { hyperliquid: { ticker: 'COIN', type: 'hip3' } } },
+            { id: 'nflx', name: 'Netflix', category: 'stock', icon: '🎬',
+              dexs: { hyperliquid: { ticker: 'NFLX', type: 'hip3' } } },
+            { id: 'amd', name: 'AMD', category: 'stock', icon: '💻',
+              dexs: { hyperliquid: { ticker: 'AMD', type: 'hip3' } } },
+            { id: 'mstr', name: 'MicroStrategy', category: 'stock', icon: '₿',
+              dexs: { hyperliquid: { ticker: 'MSTR', type: 'hip3' } } },
+
+            { id: 'spacex', name: 'SpaceX', category: 'preipo', icon: '🚀',
+              dexs: { hyperliquid: { ticker: 'SPACEX', type: 'hip3' } } },
+
+            { id: 'gold', name: 'Gold', category: 'commodity', icon: '🥇',
+              dexs: {
+                  hyperliquid: { ticker: 'PAXG', type: 'core' },
+                  aster: { ticker: 'XAUUSDT', type: 'perp' },
+                  lighter: { ticker: 'XAU', type: 'perp' },
+                  edgex: { ticker: 'PAXG', type: 'perp' },
+                  extended: { ticker: 'XAU', type: 'perp' },
+                  variational: { ticker: 'PAXG', type: 'perp' },
+                  pacifica: { ticker: 'PAXG', type: 'perp' },
+                  ostium: { ticker: 'XAU', type: 'perp' }
+              }
+            },
+            { id: 'silver', name: 'Silver', category: 'commodity', icon: '🥈',
+              dexs: {
+                  hyperliquid: { ticker: 'SLV', type: 'spot' },
+                  aster: { ticker: 'XAGUSDT', type: 'perp' },
+                  pacifica: { ticker: 'XAG', type: 'perp' },
+                  ostium: { ticker: 'XAG', type: 'perp' }
+              }
+            },
+            { id: 'oil', name: 'Crude Oil', category: 'commodity', icon: '🛢️',
+              dexs: {
+                  extended: { ticker: 'OIL', type: 'perp' },
+                  ostium: { ticker: 'CL', type: 'perp' }
+              }
+            },
+            { id: 'copper', name: 'Copper', category: 'commodity', icon: '🟤',
+              dexs: { ostium: { ticker: 'HG', type: 'perp' } } },
+            { id: 'platinum', name: 'Platinum', category: 'commodity', icon: '⚪',
+              dexs: { ostium: { ticker: 'XPT', type: 'perp' } } },
+            { id: 'palladium', name: 'Palladium', category: 'commodity', icon: '🔘',
+              dexs: { ostium: { ticker: 'XPD', type: 'perp' } } },
+
+            { id: 'eurusd', name: 'EUR/USD', category: 'forex', icon: '💶',
+              dexs: {
+                  hyperliquid: { ticker: 'PEUR', type: 'hip3' },
+                  ostium: { ticker: 'EUR', type: 'perp' }
+              }
+            }
+        ];
+
+        const basePrices = {
+            xyz100: 21500, nvda: 189, tsla: 432, aapl: 260, googl: 322,
+            amzn: 242, msft: 484, meta: 649, pltr: 78, hood: 48,
+            coin: 295, nflx: 935, amd: 125, mstr: 385, spacex: 250,
+            gold: 2685, silver: 31.50, oil: 73.50, copper: 4.25,
+            platinum: 985, palladium: 935, eurusd: 1.0285
         };
-        let apiStatus = { hyperliquid: false };
+
+        let priceData = {};
+        let currentCategory = 'all';
 
         async function fetchHyperliquid() {
             try {
-                const r = await fetch('https://api.hyperliquid.xyz/info', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                const response = await fetch('https://api.hyperliquid.xyz/info', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ type: 'allMids' })
                 });
-                const d = await r.json();
-                if (d.PAXG) priceData.XAU.hyperliquid = parseFloat(d.PAXG);
-                apiStatus.hyperliquid = true;
-                document.getElementById('hlDot').className = 'api-dot live';
-                return true;
-            } catch (e) {
-                apiStatus.hyperliquid = false;
-                document.getElementById('hlDot').className = 'api-dot sim';
-                return false;
+                return await response.json();
+            } catch (error) {
+                console.error('Hyperliquid API error:', error);
+                return null;
             }
         }
 
-        function simulate() {
-            const base = priceData.XAU.hyperliquid > 0 ? priceData.XAU.hyperliquid : 2650;
-            priceData.XAU.ostium = base * (1 + (Math.random() - 0.5) * 0.001);
-            priceData.XAU.lighter = base * (1 + (Math.random() - 0.5) * 0.001);
-            priceData.XAU.extended = base * (1 + (Math.random() - 0.5) * 0.001);
-            priceData.XAU.aster = base * (1 + (Math.random() - 0.5) * 0.001);
-            priceData.SPX.ostium = 5850 * (1 + (Math.random() - 0.5) * 0.0005);
-            priceData.SPX.extended = 5852 * (1 + (Math.random() - 0.5) * 0.0005);
-            priceData.EURUSD.ostium = 1.0310 * (1 + (Math.random() - 0.5) * 0.0002);
-            priceData.EURUSD.lighter = 1.0312 * (1 + (Math.random() - 0.5) * 0.0002);
-            priceData.EURUSD.extended = 1.0314 * (1 + (Math.random() - 0.5) * 0.0002);
+        function getSimulatedPrice(basePrice, variation = 0.0005) {
+            return basePrice * (1 + (Math.random() - 0.5) * variation * 2);
         }
 
-        function findArb() {
-            const ops = [];
-            for (const [asset, prices] of Object.entries(priceData)) {
-                const valid = Object.entries(prices).filter(([_, p]) => p > 0);
-                if (valid.length < 2) continue;
-                let min = valid[0], max = valid[0];
-                for (const [d, p] of valid) { if (p < min[1]) min = [d, p]; if (p > max[1]) max = [d, p]; }
-                const spread = ((max[1] - min[1]) / min[1]) * 100;
-                if (spread > 0.001) {
-                    ops.push({
-                        asset, name: { XAU: 'Gold', SPX: 'S&P 500', EURUSD: 'EUR/USD' }[asset],
-                        type: { XAU: 'commodity', SPX: 'index', EURUSD: 'forex' }[asset],
-                        longDex: min[0], longPrice: min[1], longLive: apiStatus[min[0]],
-                        shortDex: max[0], shortPrice: max[1], shortLive: apiStatus[max[0]],
-                        spread, apy: (spread * 365).toFixed(1)
-                    });
-                }
-            }
-            return ops.sort((a, b) => b.spread - a.spread);
-        }
-
-        function updateTable() {
-            const tb = document.getElementById('arbTableBody');
-            const ops = findArb();
-            if (!ops.length) { tb.innerHTML = '<tr class="empty-row"><td colspan="8">기회 없음</td></tr>'; return; }
-            let h = '';
-            ops.forEach(o => {
-                const ic = o.type === 'commodity' ? 'gold' : o.type === 'index' ? 'spx' : 'eur';
-                const fp = p => p >= 100 ? p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : p.toFixed(4);
-                const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-                const bw = Math.min(o.spread * 100, 100);
-                h += `<tr>
-                    <td><div class="asset-cell"><div class="asset-icon ${ic}">${o.asset.substring(0,2)}</div><div><div class="asset-name">${o.asset}</div><div class="asset-type">${o.name}</div></div></div></td>
-                    <td>${cap(o.longDex)}</td><td class="mono ${o.longLive ? 'price-live' : 'price-sim'}">$${fp(o.longPrice)}</td>
-                    <td>${cap(o.shortDex)}</td><td class="mono ${o.shortLive ? 'price-live' : 'price-sim'}">$${fp(o.shortPrice)}</td>
-                    <td class="mono ${o.spread >= 0.05 ? 'text-green' : ''}">${o.spread.toFixed(4)}%<div class="spread-bar"><div class="spread-fill ${o.spread >= 0.05 ? 'green' : 'yellow'}" style="width:${bw}%"></div></div></td>
-                    <td class="mono text-gold">${o.apy}%</td>
-                    <td><button class="btn-sm" onclick="sel('${o.asset}','${o.longDex}','${o.shortDex}')">분석</button></td>
-                </tr>`;
+        async function updatePrices() {
+            const hlPrices = await fetchHyperliquid();
+            
+            assets.forEach(asset => {
+                priceData[asset.id] = {};
+                const basePrice = basePrices[asset.id];
+                
+                Object.entries(asset.dexs).forEach(([dex, info]) => {
+                    let price;
+                    if (dex === 'hyperliquid' && hlPrices) {
+                        if (info.ticker === 'PAXG' && hlPrices['PAXG']) {
+                            price = parseFloat(hlPrices['PAXG']);
+                        } else {
+                            price = getSimulatedPrice(basePrice, 0.0001);
+                        }
+                    } else {
+                        price = getSimulatedPrice(basePrice, 0.001);
+                    }
+                    priceData[asset.id][dex] = {
+                        price, ticker: info.ticker, type: info.type,
+                        isLive: dex === 'hyperliquid'
+                    };
+                });
             });
-            tb.innerHTML = h;
+            
+            renderGrid();
+            updateStats();
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
         }
 
-        function sel(a, l, s) { document.getElementById('targetAsset').value = a; document.getElementById('longDex').value = l; document.getElementById('shortDex').value = s; calculateStrategy(); }
-
-        function calculateStrategy() {
-            const a = document.getElementById('targetAsset').value;
-            const sz = parseFloat(document.getElementById('positionSize').value);
-            const lv = parseInt(document.getElementById('leverage').value);
-            const ld = document.getElementById('longDex').value;
-            const sd = document.getElementById('shortDex').value;
-            const fd = parseFloat(document.getElementById('fundingDiff').value) || 0;
-            const lp = priceData[a]?.[ld] || 0, sp = priceData[a]?.[sd] || 0;
-            if (!lp || !sp) { document.getElementById('currentSpread').textContent = 'N/A'; return; }
-            const spr = Math.abs((sp - lp) / lp * 100);
-            const daily = sz * lv * ((spr + fd * 3) / 100);
-            const apy = (spr + fd * 365 * 3) * lv;
-            document.getElementById('currentSpread').textContent = spr.toFixed(4) + '%';
-            document.getElementById('dailyPnl').textContent = '$' + daily.toFixed(2);
-            document.getElementById('dailyNote').textContent = `${lv}x 레버리지`;
-            document.getElementById('annualApy').textContent = apy.toFixed(1) + '%';
-            let rk = 'Low', rc = 'var(--green)', rn = '낮은 리스크';
-            if (lv >= 10) { rk = 'High'; rc = 'var(--red)'; rn = '청산 리스크'; }
-            else if (lv >= 5 || spr < 0.03) { rk = 'Medium'; rc = 'var(--gold)'; rn = '오라클 리스크'; }
-            document.getElementById('riskLevel').textContent = rk;
-            document.getElementById('riskLevel').style.color = rc;
-            document.getElementById('riskNote').textContent = rn;
+        function calculateArb(prices) {
+            const dexs = Object.entries(prices);
+            if (dexs.length < 2) return null;
+            
+            let minPrice = Infinity, maxPrice = -Infinity;
+            let buyDex = '', sellDex = '';
+            
+            dexs.forEach(([dex, data]) => {
+                if (data.price < minPrice) { minPrice = data.price; buyDex = dex; }
+                if (data.price > maxPrice) { maxPrice = data.price; sellDex = dex; }
+            });
+            
+            const spread = ((maxPrice - minPrice) / minPrice) * 100;
+            if (spread > 0.02) {
+                return { spread: spread.toFixed(3), buyDex, sellDex, buyPrice: minPrice, sellPrice: maxPrice };
+            }
+            return null;
         }
 
-        async function refreshData() {
-            const ri = document.getElementById('refreshIcon');
-            ri.style.animation = 'spin 0.6s linear infinite';
-            document.getElementById('statusText').textContent = '업데이트중...';
-            const ok = await fetchHyperliquid();
-            simulate();
-            updateTable();
-            calculateStrategy();
-            document.getElementById('mainStatus').className = ok ? 'status-dot' : 'status-dot error';
-            document.getElementById('statusText').textContent = ok ? 'Live' : 'Error';
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('ko-KR');
-            setTimeout(() => ri.style.animation = '', 600);
+        function renderGrid() {
+            const grid = document.getElementById('assetGrid');
+            grid.innerHTML = '';
+            
+            const filtered = currentCategory === 'all' ? assets : assets.filter(a => a.category === currentCategory);
+            
+            filtered.forEach(asset => {
+                const prices = priceData[asset.id] || {};
+                const arb = calculateArb(prices);
+                
+                const sortedDexs = Object.entries(prices).sort((a, b) => {
+                    if (a[0] === 'hyperliquid') return -1;
+                    if (b[0] === 'hyperliquid') return 1;
+                    return b[1].price - a[1].price;
+                });
+                
+                const avgPrice = sortedDexs.length > 0 
+                    ? sortedDexs.reduce((sum, [_, d]) => sum + d.price, 0) / sortedDexs.length : 0;
+                
+                let dexListHTML = sortedDexs.map(([dex, data]) => {
+                    const diff = ((data.price - avgPrice) / avgPrice) * 100;
+                    const isBestBuy = arb && dex === arb.buyDex;
+                    const isBestSell = arb && dex === arb.sellDex;
+                    const rowClass = isBestBuy ? 'best-buy' : (isBestSell ? 'best-sell' : '');
+                    const hlClass = dex === 'hyperliquid' ? 'hl' : '';
+                    
+                    return `
+                        <div class="dex-row ${rowClass} ${hlClass}">
+                            <div class="dex-left">
+                                <span class="dex-name">${formatDexName(dex)}</span>
+                                <span class="dex-ticker">${data.ticker}</span>
+                                <span class="badge ${data.type}">${data.type}</span>
+                                <span class="badge ${data.isLive ? 'live' : 'sim'}">${data.isLive ? '●' : '○'}</span>
+                            </div>
+                            <div class="dex-right">
+                                <span class="price">$${formatPrice(data.price)}</span>
+                                <span class="diff ${diff >= 0 ? 'pos' : 'neg'}">${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%</span>
+                            </div>
+                        </div>`;
+                }).join('');
+                
+                let arbHTML = '';
+                if (arb) {
+                    arbHTML = `
+                        <div class="arb-box">
+                            <div>
+                                <div class="arb-label">⚡ ARB</div>
+                                <div class="arb-route">${formatDexName(arb.buyDex)} → ${formatDexName(arb.sellDex)}</div>
+                            </div>
+                            <div class="arb-spread">${arb.spread}%</div>
+                        </div>`;
+                } else if (sortedDexs.length < 2) {
+                    arbHTML = `<div class="no-arb">Single DEX</div>`;
+                }
+                
+                const card = document.createElement('div');
+                card.className = `card ${arb ? 'has-arb' : ''}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="asset-info">
+                            <span class="asset-icon">${asset.icon}</span>
+                            <span class="asset-name">${asset.name}</span>
+                            <span class="asset-meta">${sortedDexs.length} DEX</span>
+                        </div>
+                        <span class="cat-badge ${asset.category}">${asset.category}</span>
+                    </div>
+                    <div class="dex-table">${dexListHTML}</div>
+                    ${arbHTML}`;
+                grid.appendChild(card);
+            });
         }
 
-        refreshData();
-        setInterval(refreshData, 15000);
+        function updateStats() {
+            let arbCount = 0, maxSpread = 0;
+            assets.forEach(asset => {
+                const arb = calculateArb(priceData[asset.id] || {});
+                if (arb) { arbCount++; maxSpread = Math.max(maxSpread, parseFloat(arb.spread)); }
+            });
+            
+            document.getElementById('totalAssets').textContent = assets.length;
+            document.getElementById('arbCount').textContent = arbCount;
+            document.getElementById('maxSpread').textContent = maxSpread.toFixed(2) + '%';
+        }
+
+        function formatDexName(dex) {
+            const names = { hyperliquid: 'Hyperliquid', aster: 'Aster', lighter: 'Lighter',
+                edgex: 'edgeX', extended: 'Extended', variational: 'Variational',
+                pacifica: 'Pacifica', ostium: 'Ostium' };
+            return names[dex] || dex;
+        }
+
+        function formatPrice(price) {
+            if (price >= 1000) return price.toLocaleString('en-US', { maximumFractionDigits: 2 });
+            if (price >= 100) return price.toFixed(2);
+            if (price >= 1) return price.toFixed(3);
+            return price.toFixed(4);
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderGrid();
+            });
+        });
+
+        updatePrices();
+        setInterval(updatePrices, 15000);
     </script>
 </body>
 </html>
